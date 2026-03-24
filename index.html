@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MUI_HUB – Learn • Build • Hire</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MUI_HUB – Pakistan's top FYP, web & app development agency. We build your future with React, Flutter, Laravel & Firebase.">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* ══════════════════════════════════════════
+   HERO SLIDER — COMPLETE SYSTEM
+══════════════════════════════════════════ */
+.hero { background: var(--navy) !important; overflow: hidden; }
+.hero-bg { display: none !important; }
+
+/* Slider container sits behind everything */
+.hero-slider {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Individual slides */
+.slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center center;
+  opacity: 0;
+  transform: scale(1.08);
+  transition: opacity 1.4s cubic-bezier(.4,0,.2,1),
+              transform 8s cubic-bezier(.25,0,.1,1);
+  will-change: opacity, transform;
+}
+.slide.active  { opacity: 1;  transform: scale(1); }
+.slide.leaving { opacity: 0;  transform: scale(0.97);
+                 transition: opacity 0.9s ease, transform 1.2s ease; }
+
+/* Cinematic dark overlay — always readable */
+.slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(5,13,31,0.68) 0%,
+    rgba(5,13,31,0.35) 35%,
+    rgba(5,13,31,0.40) 65%,
+    rgba(5,13,31,0.82) 100%
+  );
+}
+
+/* Per-slide colour accent (z:2, above the dark overlay) */
+.slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── 5 Tech / workspace images ── */
+.slide-1 { background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=2072&q=80'); }
+.slide-1::before { background: radial-gradient(ellipse 70% 55% at 50% 5%,  rgba(0,229,255,0.20) 0%, transparent 68%); }
+
+.slide-2 { background-image: url('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=2069&q=80'); }
+.slide-2::before { background: radial-gradient(ellipse 70% 55% at 80% 20%, rgba(123,47,255,0.22) 0%, transparent 68%); }
+
+.slide-3 { background-image: url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=2070&q=80'); }
+.slide-3::before { background: radial-gradient(ellipse 70% 55% at 20% 80%, rgba(0,245,160,0.16) 0%, transparent 68%); }
+
+.slide-4 { background-image: url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=2072&q=80'); }
+.slide-4::before { background: radial-gradient(ellipse 70% 55% at 50% 10%, rgba(0,229,255,0.18) 0%, transparent 68%); }
+
+.slide-5 { background-image: url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=2070&q=80'); }
+.slide-5::before { background: radial-gradient(ellipse 70% 55% at 65% 35%, rgba(255,214,10,0.14) 0%, transparent 68%); }
+
+/* ══════════════════════════════════════════
+   CONTROLS LAYER  (z:8 — above slides, below hero text)
+══════════════════════════════════════════ */
+.slider-controls {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+
+/* ── Arrow buttons ── */
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: all;
+  background: rgba(5,13,31,0.50);
+  border: 1.5px solid rgba(0,229,255,0.30);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: rgba(240,244,255,0.85);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0;
+  outline: none;
+  user-select: none;
+  transition: all 0.3s ease;
+}
+.slider-arrow:hover {
+  background: rgba(0,229,255,0.18);
+  border-color: rgba(0,229,255,0.80);
+  color: #fff;
+  box-shadow: 0 0 24px rgba(0,229,255,0.45), inset 0 0 12px rgba(0,229,255,0.10);
+  transform: translateY(-50%) scale(1.1);
+}
+.slider-arrow:active { transform: translateY(-50%) scale(0.95); }
+.slider-arrow.prev { left: 22px; }
+.slider-arrow.next { right: 22px; }
+
+/* ── Dots pill (centred bottom) ── */
+.slider-dots-row {
+  position: absolute;
+  bottom: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: all;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(5,13,31,0.50);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0,229,255,0.18);
+  border-radius: 50px;
+  padding: 9px 20px;
+}
+
+/* Individual dot */
+.slider-dot {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(240,244,255,0.28);
+  border: 1.5px solid rgba(240,244,255,0.45);
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(.4,0,.2,1);
+}
+/* Outer glow ring on active */
+.slider-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+/* Active state — pill shape */
+.slider-dot.active {
+  width: 36px;
+  border-radius: 6px;
+  background: rgba(0,229,255,0.20);
+  border-color: rgba(0,229,255,0.65);
+}
+.slider-dot.active::after {
+  inset: -2px;
+  border-color: rgba(0,229,255,0.90);
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(0,229,255,0.55);
+}
+/* Inner progress fill */
+.dot-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 0%;
+  background: linear-gradient(90deg, #00e5ff, #ffd60a);
+  border-radius: 4px;
+  pointer-events: none;
+  transition: none;
+}
+
+/* ── Slide counter (top-right) ── */
+.slide-counter {
+  position: absolute;
+  top: calc(34px + 82px + 16px);
+  right: 26px;
+  pointer-events: none;
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  font-family: 'Montserrat', sans-serif;
+}
+.slide-counter .cur {
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: #00e5ff;
+  line-height: 1;
+  text-shadow: 0 0 16px rgba(0,229,255,0.55);
+}
+.slide-counter .sep {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(240,244,255,0.35);
+}
+.slide-counter .tot {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(240,244,255,0.40);
+}
+
+/* ── Caption (bottom-left) ── */
+.slide-caption {
+  position: absolute;
+  bottom: 46px;
+  left: 28px;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transform: translateX(-12px);
+  transition: all 0.5s ease 0.35s;
+}
+.slide-caption.visible { opacity: 1; transform: translateX(0); }
+.slide-caption .line {
+  width: 22px; height: 2px;
+  background: #00e5ff;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+.slide-caption .txt {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: rgba(240,244,255,0.42);
+}
+
+/* ── Bottom edge progress bar ── */
+.slider-progress-bar {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #00e5ff 0%, #ffd60a 50%, #00e5ff 100%);
+  background-size: 200% 100%;
+  animation: pShimmer 2s linear infinite;
+  pointer-events: none;
+  border-radius: 0 2px 0 0;
+}
+@keyframes pShimmer {
+  0%   { background-position: 0%   0%; }
+  100% { background-position: 200% 0%; }
+}
+
+/* Hero content layers */
+.hero-inner { position: relative; z-index: 5; }
+.hero-grid  { z-index: 1; opacity: 0.55; }
+.orb        { z-index: 2; }
+
+/* ── FONT OVERRIDES ── */
+body { font-family: 'Montserrat', sans-serif; }
+h1,h2,h3,h4,h5,h6 { font-family:'Montserrat',sans-serif; overflow:visible !important; }
+.hero h1,.hero-title { font-weight:900 !important; line-height:1.15 !important; }
+#typing-text  { font-family:'DM Sans',sans-serif; font-weight:400; min-height:4rem; line-height:1.7; }
+.hero-desc    { font-family:'DM Sans',sans-serif; }
+.navbar-brand,.nav-link,.btn-primary,.btn-outline-light,.btn-gold,
+.section-label,.footer-heading,.pricing-title,.stat-item .num {
+  font-family:'Montserrat',sans-serif;
+}
+
+/* ── Mobile ── */
+@media(max-width:576px){
+  .slider-arrow  { display:none; }
+  .slide-counter { display:none; }
+  .slide-caption { left:14px; }
+  .slider-dots-row { bottom:26px; padding:7px 14px; gap:8px; }
+  .slider-dot { width:7px; height:7px; }
+  .slider-dot.active { width:26px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     CRIME LINE — SCROLLING TICKER
+══════════════════════════════════════════════ -->
+<div class="ticker-wrap" aria-label="Announcements">
+  <div class="ticker-track" id="ticker-track"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════════ -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">MUI_HUB</a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="services.html">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>
+        <li class="nav-item"><a class="nav-link" href="pricing.html">Pricing</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+        <li class="nav-item ms-2">
+          <a class="btn-primary" href="contact.html" style="padding:10px 22px;font-size:0.78rem;">Get Started</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     HERO  —  Background Slider
+══════════════════════════════════════════════ -->
+<section class="hero">
+
+  <!-- ▶ BACKGROUND IMAGE SLIDER ◀ -->
+  <div class="hero-slider" id="heroSlider">
+
+    <div class="slide slide-1 active"></div>
+    <div class="slide slide-2"></div>
+    <div class="slide slide-3"></div>
+    <div class="slide slide-4"></div>
+    <div class="slide slide-5"></div>
+
+    <div class="slider-controls">
+
+      <!-- Left Arrow -->
+      <button class="slider-arrow prev" id="sliderPrev" aria-label="Previous slide">&#8592;</button>
+
+      <!-- Right Arrow -->
+      <button class="slider-arrow next" id="sliderNext" aria-label="Next slide">&#8594;</button>
+
+      <!-- Dots (injected by JS) -->
+      <div class="slider-dots-row" id="sliderDots"></div>
+
+      <!-- Counter top-right -->
+      <div class="slide-counter">
+        <span class="cur" id="slideCounterCur">01</span>
+        <span class="sep">/</span>
+        <span class="tot">05</span>
+      </div>
+
+      <!-- Caption bottom-left -->
+      <div class="slide-caption visible" id="slideCaption">
+        <span class="line"></span>
+        <span class="txt" id="slideCaptionTxt">Earth from Space · NASA</span>
+      </div>
+
+      <!-- Bottom progress bar -->
+      <div class="slider-progress-bar" id="sliderProgressBar"></div>
+
+    </div>
+  </div><!-- /hero-slider -->
+
+  <!-- Floating orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <!-- Grid overlay -->
+  <div class="hero-grid"></div>
+
+  <!-- ▶ HERO TEXT CONTENT ◀ -->
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="pulse"></span>
+      Available Now &middot; Pakistan's #1 FYP &amp; Dev Studio
+    </div>
+
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<h1 class="hero-title" style="display: block; text-align: center;">
+  <div style="display: block; margin-bottom: 10px;">
+    <span style="color:#f0f4ff;">We Build</span>
+    <span class="line-gold">Your Future</span>
+  </div>
+  
+  <span class="line-cyan" style="display: block; font-size: 0.8em; margin-top: 15px;">
+    <i class="fa-solid fa-graduation-cap"></i>
+  </span>
+</h1>
+
+    <p id="typing-text"></p>
+
+    <p class="hero-desc">
+      "Your journey from student to developer starts here. We help you master the code, build the project, and ace the presentation with industry-standard expertise."
+    </p>
+
+    <div class="hero-btns d-flex flex-wrap justify-content-center gap-3">
+      <a href="contact.html" class="btn-primary">Start Your Project</a>
+      <a href="services.html" class="btn-outline-light">Explore Services</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item"><div class="num">200+</div><div class="lbl">Projects Done</div></div>
+      <div class="stat-item"><div class="num">98%</div><div class="lbl">Client Satisfaction</div></div>
+      <div class="stat-item"><div class="num">5★</div><div class="lbl">Avg Rating</div></div>
+      <div class="stat-item"><div class="num">24/7</div><div class="lbl">WhatsApp Support</div></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════════════
+     WHY MUI_HUB
+══════════════════════════════════════════════ -->
+<section class="section-dark">
+  <div class="container-custom">
+    <div class="text-center mb-2" data-aos="fade-up">
+      <span class="section-label">Why Choose Us</span>
+    </div>
+    <h2 data-aos="fade-up">Why <span class="accent">MUI_HUB</span>?</h2>
+    <div class="divider"></div>
+    <div class="row g-4">
+      <div class="col-md-4" data-aos="fade-up">
+        <div class="card"><div class="card-body">
+          <div class="card-icon">🎓</div>
+          <h5>Full FYP Guidance</h5>
+          <p>We cover idea selection, clean coding, professional documentation, and viva preparation — so you never feel stuck before submission week.</p>
+        </div></div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="card"><div class="card-body">
+          <div class="card-icon">⚡</div>
+          <h5>Modern Tech Stack</h5>
+          <p>React, Flutter, Laravel, Firebase, and EmailJS — selected to be easy to demo and impressive in slides, reports, and client presentations.</p>
+        </div></div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="card"><div class="card-body">
+          <div class="card-icon">💬</div>
+          <h5>WhatsApp‑First Support</h5>
+          <p>Quick answers for changes, fixes, and viva questions through WhatsApp — tailored for Pakistani students and clients around the clock.</p>
+        </div></div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="80">
+        <div class="card"><div class="card-body">
+          <div class="card-icon">🔐</div>
+          <h5>100% Confidential</h5>
+          <p>Your project details, source code, and personal info stay completely private. We never share your work without your consent.</p>
+        </div></div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="160">
+        <div class="card"><div class="card-body">
+          <div class="card-icon">📦</div>
+          <h5>End‑to‑End Delivery</h5>
+          <p>We handle frontend, backend, database, deployment, and post-delivery support — you get a fully working product, not just code.</p>
+        </div></div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="240">
+        <div class="card"><div class="card-body">
+          <div class="card-icon">💸</div>
+          <h5>Student‑Friendly Pricing</h5>
+          <p>Milestone-based payment plans designed for Pakistani students and startups — no hidden fees, no surprises after delivery.</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     TECH STACK
+══════════════════════════════════════════════ -->
+<section class="section-darker">
+  <div class="container-custom text-center">
+    <div data-aos="fade-up"><span class="section-label">Our Stack</span></div>
+    <h2 data-aos="fade-up">Technologies We <span class="accent">Master</span></h2>
+    <div class="divider"></div>
+    <div class="row g-3 justify-content-center" data-aos="fade-up" data-aos-delay="100">
+      <div class="col-auto"><div class="footer-badge" style="font-size:0.82rem;padding:8px 18px;">⚛️ React / Next.js</div></div>
+      <div class="col-auto"><div class="footer-badge" style="font-size:0.82rem;padding:8px 18px;">📱 Flutter</div></div>
+      <div class="col-auto"><div class="footer-badge" style="font-size:0.82rem;padding:8px 18px;">🔥 Firebase</div></div>
+      <div class="col-auto"><div class="footer-badge" style="font-size:0.82rem;padding:8px 18px;">🐘 Laravel / PHP</div></div>
+      <div class="col-auto"><div class="footer-badge" style="font-size:0.82rem;padding:8px 18px;">🟢 Node.js</div></div>
+      <div class="col-auto"><div class="footer-badge" style="font-size:0.82rem;padding:8px 18px;">🗄️ MySQL / MongoDB</div></div>
+      <div class="col-auto"><div class="footer-badge" style="font-size:0.82rem;padding:8px 18px;">🤖 Python / TensorFlow</div></div>
+      <div class="col-auto"><div class="footer-badge" style="font-size:0.82rem;padding:8px 18px;">🚀 Vercel / Netlify</div></div>
+      <div class="col-auto"><div class="footer-badge" style="font-size:0.82rem;padding:8px 18px;">📊 Power BI / Chart.js</div></div>
+      <div class="col-auto"><div class="footer-badge" style="font-size:0.82rem;padding:8px 18px;">📧 EmailJS</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     CTA BAND
+══════════════════════════════════════════════ -->
+<section class="section-dark" style="padding:60px 0;">
+  <div class="container-custom text-center" data-aos="zoom-in">
+    <h2 style="margin-bottom:1rem;">Ready to Build Something <span class="gold">Amazing?</span></h2>
+    <p style="color:var(--muted);margin-bottom:2rem;max-width:560px;margin-left:auto;margin-right:auto;">
+      Talk to us on WhatsApp right now. No lengthy forms — just describe your idea and we'll come back with a plan.
+    </p>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <a href="https://wa.me/923485270251" target="_blank" class="btn-primary">💬 Chat on WhatsApp</a>
+      <a href="pricing.html" class="btn-outline-light">View Pricing →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container-custom">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand-name">MUI_HUB</div>
+        <div class="footer-tagline">Learn • Build • Hire</div>
+        <p class="footer-about">Pakistan's trusted FYP and software development studio. We help students and clients build modern, production-ready projects with full support from idea to deployment.</p>
+        <div class="social-links">
+          <a href="https://wa.me/923485270251" target="_blank" class="social-btn" title="WhatsApp">💬</a>
+          <a href="mailto:ulislamk22@gmail.com" class="social-btn" title="Email">✉️</a>
+          <a href="tel:+923485270251" class="social-btn" title="Call">📞</a>
+          <a href="#" class="social-btn" title="GitHub">🐙</a>
+        </div>
+   <div class="footer-badges-grid">
+    <span class="footer-badge">✅ 100% Satisfaction</span>
+    <span class="footer-badge">🔒 Confidential</span>
+    <span class="footer-badge">🛡️ Secure Payment</span>
+    <span class="footer-badge">⚡ Fast Delivery</span>
+</div>
+      </div>
+      <div>
+        <div class="footer-heading">Quick Links</div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="terms.html">Terms &amp; Conditions</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Services</div>
+        <ul class="footer-links">
+          <li><a href="services.html">FYP Assistance</a></li>
+          <li><a href="services.html">Web Development</a></li>
+          <li><a href="services.html">App Development</a></li>
+          <li><a href="services.html">AI / ML Projects</a></li>
+          <li><a href="services.html">Data &amp; Analytics</a></li>
+          <li><a href="services.html">Skill Courses</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Contact Us</div>
+        <div class="contact-item"><div class="icon">📞</div><div><a href="tel:+923485270251">+92 348 5270251</a></div></div>
+        <div class="contact-item"><div class="icon">💬</div><div><a href="https://wa.me/923485270251" target="_blank">WhatsApp Chat</a></div></div>
+        <div class="contact-item"><div class="icon">✉️</div><div><a href="mailto:ulislamk22@gmail.com">ulislamk22@gmail.com</a></div></div>
+        <div class="contact-item"><div class="icon">📍</div><div style="color:var(--muted);">Rawalpindi, Pakistan</div></div>
+        <a href="contact.html" class="btn-primary mt-3" style="padding:11px 24px;font-size:0.8rem;display:inline-block;">Send a Message</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copyright">© 2026 <span>MUI_HUB</span>. All Rights Reserved. ❤️ Pakistan ❤️</p>
+      <div class="footer-legal">
+        <a href="terms.html">Terms &amp; Conditions</a>
+        <a href="contact.html">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/923485270251" target="_blank" class="whatsapp-btn" title="Chat on WhatsApp">💬</a>
+
+<!-- ══════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+AOS.init({ duration:750, once:true, offset:60 });
+
+/* ── Navbar scroll ── */
+window.addEventListener('scroll', () =>
+  document.querySelector('.navbar').classList.toggle('scrolled', window.scrollY > 40)
+);
+
+/* ════════════════════════════════════════════════
+   TICKER
+════════════════════════════════════════════════ */
+const TICKER_ITEMS = [
+  "🏆 100% Client Satisfaction Guaranteed",
+  "🚀 Fast & Reliable Project Delivery",
+  "📱 Mobile • Web • AI • ML Projects",
+  "🎓 Final Year Projects (FYP) Specialists",
+  "💬 24/7 WhatsApp Support Available",
+  "🔥 200+ Successful Projects Delivered",
+  "⭐ 5-Star Rated by Students Across Pakistan",
+  "💻 React • Flutter • Laravel • Firebase • Node.js",
+  "🔒 100% Confidential & Secure",
+  "📦 End-to-End Delivery — Idea to Deployment",
+  "🎯 Viva Preparation & Documentation Included",
+  "💸 Student-Friendly Milestone-Based Pricing",
+  "🇵🇰 Proudly Serving Pakistan Since 2022",
+  "🤝 500+ Happy Clients & Counting",
+  "✅ Bug-Free Code or Free Revision",
+];
+(function buildTicker(){
+  const track = document.getElementById('ticker-track');
+  [...TICKER_ITEMS,...TICKER_ITEMS].forEach(txt => {
+    const el = document.createElement('span');
+    el.className = 'ticker-item';
+    el.innerHTML = `<span class="dot"></span>${txt}`;
+    track.appendChild(el);
+  });
+})();
+
+/* ════════════════════════════════════════════════
+   HERO BACKGROUND SLIDER
+   • 5 slides auto-advance every 2 s
+   • ← → arrow buttons  (click resets timer)
+   • Dot pills — active one shows animated fill
+   • Clicking any dot jumps to that slide
+   • Slide counter top-right updates (01/05 …)
+   • Caption label bottom-left fades per slide
+   • Bottom progress bar fills each 2 s
+   • Pauses on mouse hover over hero
+   • Swipe-left / swipe-right on touch
+   • Keyboard ← → supported
+════════════════════════════════════════════════ */
+(function initSlider(){
+
+  const INTERVAL  = 2000;   // ms auto-advance
+  const slides    = Array.from(document.querySelectorAll('.slide'));
+  const dotsWrap  = document.getElementById('sliderDots');
+  const prevBtn   = document.getElementById('sliderPrev');
+  const nextBtn   = document.getElementById('sliderNext');
+  const counterEl = document.getElementById('slideCounterCur');
+  const capTxt    = document.getElementById('slideCaptionTxt');
+  const capBox    = document.getElementById('slideCaption');
+  const progBar   = document.getElementById('sliderProgressBar');
+
+  const CAPTIONS = [
+    "Earth from Space · NASA",
+    "Code in Motion · Dev Life",
+    "Laptop & Focus · Workspace",
+    "Web Dev · Open Source",
+    "Syntax Glow · Code Art",
+  ];
+
+  const TOTAL = slides.length;
+  let current = 0;
+  let timer   = null;
+  let dots    = [];
+
+  /* ─── Build dot buttons ─── */
+  for (let i = 0; i < TOTAL; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'slider-dot' + (i === 0 ? ' active' : '');
+    btn.setAttribute('aria-label', `Go to slide ${i + 1}`);
+    btn.innerHTML = '<span class="dot-fill"></span>';
+    btn.addEventListener('click', () => goTo(i, true));
+    dotsWrap.appendChild(btn);
+    dots.push(btn);
+  }
+
+  /* ─── Activate slide by index ─── */
+  function activate(idx) {
+    const prev = current;
+
+    // Deactivate old slide
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add('leaving');
+    dots[prev].classList.remove('active');
+    // Kill fill animation on old dot
+    const oldFill = dots[prev].querySelector('.dot-fill');
+    oldFill.style.transition = 'none';
+    oldFill.style.width = '0%';
+    // Remove leaving class after transition
+    setTimeout(() => slides[prev].classList.remove('leaving'), 1100);
+
+    // Activate new slide
+    current = ((idx % TOTAL) + TOTAL) % TOTAL;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+
+    // Counter
+    counterEl.textContent = String(current + 1).padStart(2, '0');
+
+    // Caption fade-swap
+    capBox.classList.remove('visible');
+    setTimeout(() => {
+      capTxt.textContent = CAPTIONS[current];
+      capBox.classList.add('visible');
+    }, 280);
+
+    // Start dot fill
+    startFill();
+    // Start progress bar
+    startProgress();
+  }
+
+  /* ─── Dot fill animation ─── */
+  function startFill() {
+    const fill = dots[current].querySelector('.dot-fill');
+    fill.style.transition = 'none';
+    fill.style.width = '0%';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      fill.style.transition = `width ${INTERVAL}ms linear`;
+      fill.style.width = '100%';
+    }));
+  }
+
+  /* ─── Bottom progress bar ─── */
+  function startProgress() {
+    progBar.style.transition = 'none';
+    progBar.style.width = '0%';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      progBar.style.transition = `width ${INTERVAL}ms linear`;
+      progBar.style.width = '100%';
+    }));
+  }
+
+  /* ─── Navigate to specific slide ─── */
+  function goTo(idx, resetTimer) {
+    if (idx === current) return;
+    activate(idx);
+    if (resetTimer) {
+      clearInterval(timer);
+      scheduleAuto();
+    }
+  }
+
+  /* ─── Auto-advance ─── */
+  function scheduleAuto() {
+    timer = setInterval(() => activate(current + 1), INTERVAL);
+  }
+
+  /* ─── Arrow buttons ─── */
+  prevBtn.addEventListener('click', () => goTo(current - 1, true));
+  nextBtn.addEventListener('click', () => goTo(current + 1, true));
+
+  /* ─── Keyboard ─── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft')  goTo(current - 1, true);
+    if (e.key === 'ArrowRight') goTo(current + 1, true);
+  });
+
+  /* ─── Touch swipe ─── */
+  let touchX = 0;
+  const heroEl = document.querySelector('.hero');
+  heroEl.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  heroEl.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) dx < 0 ? goTo(current + 1, true) : goTo(current - 1, true);
+  }, { passive: true });
+
+  /* ─── Pause on hover ─── */
+  heroEl.addEventListener('mouseenter', () => clearInterval(timer));
+  heroEl.addEventListener('mouseleave', () => { clearInterval(timer); scheduleAuto(); });
+
+  /* ─── INIT ─── */
+  startFill();
+  startProgress();
+  scheduleAuto();
+
+})();
+
+/* ════════════════════════════════════════════════
+   TYPEWRITER
+════════════════════════════════════════════════ */
+const lines = [
+  "Final year projects with complete topic selection, clean code, documentation, and viva preparation so you can present with full confidence.",
+  "Modern websites and dashboards using React, Laravel, and Firebase that are responsive, fast, and ready to show in classroom demos and client meetings.",
+  "Cross‑platform mobile apps using Flutter or React Native, connected to Firebase Auth, real‑time databases, and cloud storage.",
+  "Skill‑based coaching where we explain every important part of the code — so you actually understand your project, not just memorise slides."
+];
+let li = 0, ci = 0;
+const typEl = document.getElementById('typing-text');
+function type(){
+  typEl.textContent = lines[li].slice(0, ci); ci++;
+  if (ci <= lines[li].length) setTimeout(type, 34);
+  else setTimeout(erase, 1900);
+}
+function erase(){
+  typEl.textContent = lines[li].slice(0, ci); ci--;
+  if (ci >= 0) setTimeout(erase, 18);
+  else { li = (li + 1) % lines.length; setTimeout(type, 400); }
+}
+type();
+</script>
+</body>
+</html>
