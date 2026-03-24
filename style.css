@@ -1232,3 +1232,17 @@ img           { max-width:100%; height:auto;   }
   .footer-top        { gap: 24px; }
   .hero-stats        { gap: 24px; }
 }
+@media (max-width: 400px) {
+    .footer-badges-grid {
+        /* This tells the browser: "Make 2 equal columns that fit exactly inside the screen" */
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 8px;
+        width: 100%;
+        padding: 0 10px;
+    }
+    
+    .footer-badge {
+        font-size: 0.7rem; /* Shrink text slightly so it doesn't wrap weirdly */
+        padding: 0 8px;
+    }
+}
